@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# docker-varnish-entrypoint
+#
+# Entrypoint for varnish docker container
+#
+# vendor: Claranet GmbH 
+# author: Martin Weber <martin.weber@de.clara.net>
+#
+
+if [ "$VARNISH_SECRET" != "" ]; then
+  echo -n "$VARNISH_SECRET" > /etc/varnish/secret
+else
+  if [ ! `cat /etc/varnish/secret` != "" ]; then
+    pwgen 15 1 > /etc/varnish/secret
+  fi
+fi
+
+
+echo "Varnish SECRET: $(cat /etc/varnish/secret)"
+
+
+if [ "$VARNISH_BACKEND" != "" -a ! -f /etc/varnish/default.vcl ]; then
+
+cat <<EOF > /etc/varnish/default.vcl
+vcl 4.0;
+import directors;  
+backend localhost { .host = "${VARNISH_BACKEND}"; .port = "${VARNISH_BACKEND_PORT}"; }
+EOF
+
+fi
+
+/usr/local/sbin/varnishd -F $@

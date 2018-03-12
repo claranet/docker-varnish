@@ -1,0 +1,19 @@
+
+services:
+- docker
+
+env:
+  - VERSION=4.1
+  - VERSION=5.2
+
+before_script:
+  - env | sort
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - cd "$VERSION"
+  - image="claranet/varnish-cache:$VERSION"
+
+script:
+  - docker build -t $image .
+  - docker push $image
+
+# vim:set et ts=2 sw=2:
