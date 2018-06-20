@@ -27,6 +27,8 @@ RUN apt install libvarnishapi1 \
  
 COPY bin/docker-varnish-entrypoint /usr/local/bin/
 
+EXPOSE 80
+
 ENTRYPOINT [ "docker-varnish-entrypoint" ]
 
 CMD [ "-a", ":80", \
